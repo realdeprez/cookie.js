@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Cookie unit test</title>
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css"/>
+    <script src="http://code.jquery.com/qunit/git/qunit.js"></script>
+    
+    <!-- javascript -->
+	<script src="cookie.js"></script>
+    
+    <!-- tests -->
+    <script>
+        QUnit.reset(function(){
+            Cookie.remove('cookie');
+        });
+        
+        test('test _strToTime', function() {
+            equal(Cookie._strToTime('-1m'), -60000, 'passed');
+            equal(Cookie._strToTime('30m'), 1800000, 'passed');
+            equal(Cookie._strToTime('2h'), 7200000, 'passed');
+            equal(Cookie._strToTime('1d'), 86400000, 'passed');
+            equal(Cookie._strToTime('30d'), 2592000000, 'passed');
+        });
+        
+        test('set and get simple value', function() {
+            Cookie.set('cookie', 'chocolate chip');
+            equal(Cookie.get('cookie'), 'chocolate chip', 'passed');
+        });
+        
+        test('set and get complex value', function() {
+            Cookie.set('cookie', 'as.bd ed|ieh,~!!@#$%^*=098345|}{<>?\'"');
+            equal(Cookie.get('cookie'), 'as.bd ed|ieh,~!!@#$%^*=098345|}{<>?\'"', 'passed');
+        });
+        
+        test('set empty cookie', function () {
+            Cookie.set('cookie', '');
+            equal(Cookie.get('cookie'), '', 'passed');
+        });
+        
+        test('set and remove', function() {
+            Cookie.set('cookie', 'oatmeal');
+            equal(Cookie.get('cookie'), 'oatmeal', 'passed');
+            Cookie.remove('cookie');
+            equal(Cookie.get('cookie'), false, 'passed');
+        });
+        
+        test('expire part 1', function() {
+            Cookie.set('to_cookie', 'peanut butter', {expires:'0.016m'});
+            equal(Cookie.get('to_cookie'), 'peanut butter', 'passed');
+            stop();
+            setTimeout(function(){QUnit.start();}, 1000);
+        });
+        
+        test('expire part 2', function() {
+            equal(Cookie.get('to_cookie'), false, 'passed');
+        });
+        
+        test('errors', function () {
+            equal(Cookie.set('cookie'), false, 'passed');
+        });
+    </script>
+</head>
+
+<body>
+	<div id="qunit"></div>
+	<div id="qunit-fixture">test markup</div>
+</body>
+</html>
